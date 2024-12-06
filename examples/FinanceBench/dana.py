@@ -64,6 +64,7 @@ def get_or_create_adaptations(doc_name: DocName) -> dict[str, str]:
 @enable_batch_qa_and_eval(output_name='DANA')
 @log_qa_and_update_output_file(output_name='DANA')
 def solve(fb_id: FbId) -> Answer:
+    print("START DANA SOLVING....")
     return get_or_create_agent(doc_name=DOC_NAMES_BY_FB_ID[fb_id]).solve(
         problem=QS_BY_FB_ID[fb_id],
         adaptations_from_known_programs=get_or_create_adaptations(doc_name=DOC_NAMES_BY_FB_ID[fb_id]))
@@ -72,6 +73,7 @@ def solve(fb_id: FbId) -> Answer:
 @enable_batch_qa_and_eval(output_name='DANA-wKnowledge')
 @log_qa_and_update_output_file(output_name='DANA-wKnowledge')
 def solve_with_knowledge(fb_id: FbId) -> Answer:
+    print("START DANA SOLVING WITH KNOWLEDGE....")
     return get_or_create_agent(doc_name=DOC_NAMES_BY_FB_ID[fb_id], expert_knowledge=True).solve(
         problem=QS_BY_FB_ID[fb_id],
         adaptations_from_known_programs=get_or_create_adaptations(doc_name=DOC_NAMES_BY_FB_ID[fb_id]))
@@ -80,6 +82,7 @@ def solve_with_knowledge(fb_id: FbId) -> Answer:
 @enable_batch_qa_and_eval(output_name='DANA-wProgStore')
 @log_qa_and_update_output_file(output_name='DANA-wProgStore')
 def solve_with_program_store(fb_id: FbId) -> Answer:
+    print("START DANA SOLVING WITH PROGRAM STORE....")
     return get_or_create_agent(doc_name=DOC_NAMES_BY_FB_ID[fb_id], expert_programs=True).solve(
         problem=QS_BY_FB_ID[fb_id],
         adaptations_from_known_programs=get_or_create_adaptations(doc_name=DOC_NAMES_BY_FB_ID[fb_id]))
@@ -88,6 +91,7 @@ def solve_with_program_store(fb_id: FbId) -> Answer:
 @enable_batch_qa_and_eval(output_name='DANA-wKnowledge-wProgStore')
 @log_qa_and_update_output_file(output_name='DANA-wKnowledge-wProgStore')
 def solve_with_knowledge_and_program_store(fb_id: FbId) -> Answer:
+    print("START DANA SOLVING WITH KNOWLEDGE AND PROGRAM STORE....")
     return get_or_create_agent(DOC_NAMES_BY_FB_ID[fb_id], expert_knowledge=True, expert_programs=True).solve(
         problem=QS_BY_FB_ID[fb_id],
         adaptations_from_known_programs=get_or_create_adaptations(doc_name=DOC_NAMES_BY_FB_ID[fb_id]))
@@ -120,6 +124,7 @@ def solve_with_program_store_with_llama(fb_id: FbId) -> Answer:
 @enable_batch_qa_and_eval(output_name='DANA-wKnowledge-wProgStore-wLlama')
 @log_qa_and_update_output_file(output_name='DANA-wKnowledge-wProgStore-wLlama')
 def solve_with_knowledge_and_program_store_with_llama(fb_id: FbId) -> Answer:
+    print("START DANA SOLVING WITH KNOWLEDGE AND PROGRAM STORE WITH LLAMA....")
     return get_or_create_agent(DOC_NAMES_BY_FB_ID[fb_id], expert_knowledge=True, expert_programs=True, use_llama=True).solve(  # noqa: E501
         problem=QS_BY_FB_ID[fb_id],
         adaptations_from_known_programs=get_or_create_adaptations(doc_name=DOC_NAMES_BY_FB_ID[fb_id]))

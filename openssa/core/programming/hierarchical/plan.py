@@ -62,7 +62,7 @@ class HTP(BaseProgram):
 
     # Reasoner for working through individual Tasks to either conclude or make partial progress on them
     # (default: Observe-Orient-Decide-Act (OODA) Reasoner)
-    reasoner: BaseReasoner = field(default_factory=OodaReasoner,
+    reasoner: BaseReasoner = field(default_factory=OodaReasoner,   # TODO: Change to Coala Reasoner and remove infinite loop
                                    init=True,
                                    repr=True,
                                    hash=None,
@@ -124,22 +124,30 @@ class HTP(BaseProgram):
         """
         self.fill_missing_resources()  # TODO: optimize to not always use all resources
 
+        print("Executing. Attempting a direct solution with reasoner")
+
         # first, attempt direct solution with Reasoner
         reasoning_wo_sub_results: str = self.reasoner.reason(task=self.task, knowledge=knowledge,
                                                              other_results=other_results)  # noqa: E501
 
-        if self.sub_htps:
-            decomposed_htp: HTP = self
+        print(f"Executing. Continue. HTP={self}")
+
+        decomposed_htp: HTP = None
+
+        print(f"Checking decomposition. self.sub_htps={self.sub_htps}\ntask.is_attempted={self.task.is_attempted()}\ntask.is_done={self.task.is_done()}\nself.programmer={self.programmer}")
+        if (self.sub_htps and not self.task.is_done()):   # Use a strict decomposition condition. Avoid decompose easy questions
+            print("Need decomposition. Having SUB_HTPS and not done")
+            decomposed_htp = self
 
         # if Reasoner's result is unsatisfactory,
         # and if there is still allowed recursive depth,
         # use Programmer to decompose Problem into sub-HTPs
-        elif (self.task.is_attempted and not self.task.is_done) and (self.programmer and self.programmer.max_depth):
-            decomposed_htp: HTP = self.programmer.create_htp(task=self.task, knowledge=knowledge,
+        elif (self.task.is_attempted() and not self.task.is_done()) and (self.programmer and self.programmer.max_depth):
+            print("Need decomposition. Task is not done.")
+            decomposed_htp = self.programmer.create_htp(task=self.task, knowledge=knowledge,
                                                              reasoner=self.reasoner)
 
-        else:
-            decomposed_htp = None
+        print(f"decomposed_htp={decomposed_htp}")
 
         # if there are sub-HTPs, recursively execute them and integrate their results
         if decomposed_htp:

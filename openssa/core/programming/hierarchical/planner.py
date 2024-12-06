@@ -45,6 +45,7 @@ class HTPlanner(BaseProgrammer):
 
     def create_htp(self, task: Task, knowledge: set[Knowledge] | None = None, reasoner: BaseReasoner | None = None) -> HTP:  # noqa: E501
         """Construct HTP for solving posed Problem with given Knowledge and Resources."""
+        print("Creating HTP with a reasoner")
         if not reasoner:
             reasoner: BaseReasoner = OodaReasoner(lm=self.lm)
 

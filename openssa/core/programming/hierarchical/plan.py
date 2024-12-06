@@ -134,15 +134,16 @@ class HTP(BaseProgram):
 
         decomposed_htp: HTP = None
 
-        if (self.sub_htps and not self.task.is_done):   # Use a strict decomposition condition. Avoid decompose easy questions
-            print("Need decomposition. SUB_HTPS and not done")
+        print(f"Checking decomposition. self.sub_htps={self.sub_htps}\ntask.is_attempted={self.task.is_attempted()}\ntask.is_done={self.task.is_done()}\nself.programmer={self.programmer}")
+        if (self.sub_htps and not self.task.is_done()):   # Use a strict decomposition condition. Avoid decompose easy questions
+            print("Need decomposition. Having SUB_HTPS and not done")
             decomposed_htp = self
 
         # if Reasoner's result is unsatisfactory,
         # and if there is still allowed recursive depth,
         # use Programmer to decompose Problem into sub-HTPs
-        elif (self.task.is_attempted and not self.task.is_done) and (self.programmer and self.programmer.max_depth):
-            print(f"Need decomposition. task.is_attempted={self.task.is_attempted}, task.is_done={self.task.is_done},\n self.programmer={self.programmer}")
+        elif (self.task.is_attempted() and not self.task.is_done()) and (self.programmer and self.programmer.max_depth):
+            print("Need decomposition. Task is not done.")
             decomposed_htp = self.programmer.create_htp(task=self.task, knowledge=knowledge,
                                                              reasoner=self.reasoner)
 

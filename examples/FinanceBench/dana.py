@@ -3,6 +3,7 @@ from functools import cache
 
 from openssa import DANA, ProgramStore, HTP, HTPlanner, FileResource, LMConfig
 from openssa.core.util.lm.huggingface import HuggingFaceLM
+from openssa.core.util.lm.ollama import OllamaLM, default_llama_index_ollama_lm
 from openssa.core.util.lm.openai import OpenAILM, default_llama_index_openai_lm
 
 # pylint: disable=wrong-import-order,wrong-import-position
@@ -13,11 +14,18 @@ from util import QAFunc, enable_batch_qa_and_eval, log_qa_and_update_output_file
 
 @cache
 def get_main_lm(use_llama: bool = False):
-    return (HuggingFaceLM if use_llama else OpenAILM).from_defaults()
+    return (OllamaLM if use_llama else OpenAILM).from_defaults()
+
+@cache
+def get_default_lm(llama_index_lm_name, use_llama: bool = False):
+    if use_llama:
+        return default_llama_index_ollama_lm(llama_index_lm_name)
+    return default_llama_index_openai_lm(llama_index_lm_name)
 
 
 @cache
 def get_or_create_expert_program_store(use_llama: bool = False) -> ProgramStore:
+    print("get_or_create_expert_program_store")
     program_store = ProgramStore(lm=get_main_lm(use_llama=use_llama))
 
     for program_name, htp_dict in EXPERT_PROGRAMS.items():
@@ -31,8 +39,9 @@ def get_or_create_expert_program_store(use_llama: bool = False) -> ProgramStore:
 def get_or_create_agent(doc_name: DocName, expert_knowledge: bool = False, expert_programs: bool = False,
                         max_depth=3, max_subtasks_per_decomp=6,
                         use_llama: bool = False,
-                        llama_index_openai_lm_name: str = LMConfig.OPENAI_DEFAULT_MODEL) -> DANA:
+                        llama_index_lm_name: str = LMConfig.OPENAI_DEFAULT_MODEL) -> DANA:
     # pylint: disable=too-many-arguments
+    print("get_or_create_agent")
     return DANA(knowledge={EXPERT_KNOWLEDGE} if expert_knowledge else None,
 
                 program_store=(get_or_create_expert_program_store(use_llama=use_llama)
@@ -43,11 +52,12 @@ def get_or_create_agent(doc_name: DocName, expert_knowledge: bool = False, exper
                                      max_depth=max_depth, max_subtasks_per_decomp=max_subtasks_per_decomp),
 
                 resources={FileResource(path=Doc(name=doc_name).dir_path,
-                                        lm=default_llama_index_openai_lm(llama_index_openai_lm_name))})
+                                        lm=get_default_lm(llama_index_lm_name, use_llama=use_llama))})
 
 
 @cache
 def get_or_create_adaptations(doc_name: DocName) -> dict[str, str]:
+    print("get_or_create_adaptations")
     return {EXPERT_HTP_COMPANY_KEY: (doc := Doc(name=doc_name)).company, EXPERT_HTP_PERIOD_KEY: doc.period}
 
 
@@ -123,6 +133,8 @@ if __name__ == '__main__':
     arg_parser.add_argument('--prog-store', action='store_true')
     arg_parser.add_argument('--llama', action='store_true')
     args = arg_parser.parse_args()
+
+    print(f"from-id={args.from_id} knowledge={args.knowledge} prog_store={args.prog_store} llama={args.llama} fb_id_col_name={FB_ID_COL_NAME} ")
 
     match (args.knowledge, args.prog_store, args.llama):
         case (False, False, False):

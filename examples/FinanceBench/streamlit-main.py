@@ -110,6 +110,8 @@ with rag:
     st.subheader('Retrieval-Augmented Generation (RAG)')
     st.subheader('_with standard settings_')
 
+    print(f"task_doc_pair={task_doc_pair}")
+
     if st.button(label='Answer',
                  on_click=None, args=None, kwargs=None,
                  type='secondary',
@@ -142,9 +144,10 @@ with pr:
             logger.level('DEBUG')
 
             agent = get_or_create_agent(doc_name=st.session_state.doc_name,
+                                        use_llama=True,
                                         expert_knowledge=True, expert_programs=True,
                                         max_depth=3, max_subtasks_per_decomp=6,
-                                        llama_index_openai_lm_name='gpt-4o-mini')
+                                        llama_index_lm_name='llama3.1:70b')
 
             st.session_state.agent_solutions[task_doc_pair]: str = (
                 agent.solve(problem=question,

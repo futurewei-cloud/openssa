@@ -46,9 +46,8 @@ class OllamaLM(BaseLM):
         """
         self.llm = Ollama(model=self.model, base_url=self.api_base, request_timeout=LMConfig.OLLAMA_DEFAULT_TIMEOUT)
         self.llm.temperature = LMConfig.OLLAMA_DEFAULT_TEMPERATURE
-        self.llm.context_window = 65536  # set ctx size 64k
+        self.llm.context_window = LMConfig.OLLAMA_DEFAULT_CONTEXT_SIZE  # set ctx size default 64k
         # self.llm.context_window = 128000   # cause HTTP timeout
-
 
     @classmethod
     def from_defaults(cls) -> OllamaLM:

@@ -43,6 +43,7 @@ class LMConfig:
     OLLAMA_DEFAULT_EMBEDDING_MODEL: str = os.environ.get('OLLAMA_EMBEDDING_MODEL', 'mxbai-embed-large')
     OLLAMA_DEFAULT_TIMEOUT: int = os.environ.get('OLLAMA_TIMEOUT', 600)
     OLLAMA_DEFAULT_TEMPERATURE: float = 0.1
+    OLLAMA_DEFAULT_CONTEXT_SIZE: int = os.environ.get('OLLAMA_CONTEXT_SIZE', 65536)  # set default ctx size 64k
 
     # LM parameters
     DEFAULT_SEED: int = 7 * 17 * 14717

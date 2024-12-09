@@ -73,7 +73,7 @@ class OodaReasoner(BaseReasoner):
 
     def _observe(self, task: Task, other_results: list[AskAnsPair] | None = None, n_words: int = 1000) -> set[Observation]:  # noqa: E501
         """Observe results from available Informational Resources as well as other results (if given)."""
-        logger.info("I am observing by collecting answers into a set.")
+        logger.info("I am observing by collecting answers from different resources into a set with LLM help.")
         observations: set[Observation] = {r.present_full_answer(question=task.ask, n_words=n_words) for r in task.resources}  # noqa: E501
 
         if other_results:

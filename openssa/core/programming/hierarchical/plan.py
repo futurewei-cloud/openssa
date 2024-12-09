@@ -130,11 +130,16 @@ class HTP(BaseProgram):
         reasoning_wo_sub_results: str = self.reasoner.reason(task=self.task, knowledge=knowledge,
                                                              other_results=other_results)  # noqa: E501
 
-        print(f"Executing. Continue. HTP={self}")
+        #print(f"Executing. Continue. HTP={self}")
 
         decomposed_htp: HTP = None
 
-        print(f"Checking decomposition. self.sub_htps={self.sub_htps}\ntask.is_attempted={self.task.is_attempted()}\ntask.is_done={self.task.is_done()}\nself.programmer={self.programmer}")
+        logger.debug(f'Continue checking decomposition.\n'
+                     f'self.sub_htps={self.sub_htps}\n'
+                     f'task.is_attempted={self.task.is_attempted()}\n'
+                     f'task.is_done={self.task.is_done()}\n'
+                     f'self.programmer={self.programmer}\n'
+                     )
         if (self.sub_htps and not self.task.is_done()):   # Use a strict decomposition condition. Avoid decompose easy questions
             print("Need decomposition. Having SUB_HTPS and not done")
             decomposed_htp = self
@@ -142,7 +147,7 @@ class HTP(BaseProgram):
         # if Reasoner's result is unsatisfactory,
         # and if there is still allowed recursive depth,
         # use Programmer to decompose Problem into sub-HTPs
-        elif (self.task.is_attempted() and not self.task.is_done()) and (self.programmer and self.programmer.max_depth):
+        elif (self.task.is_attempted() and not self.task.is_done()) and (self.programmer and self.programmer.max_depth>0):
             print("Need decomposition. Task is not done.")
             decomposed_htp = self.programmer.create_htp(task=self.task, knowledge=knowledge,
                                                              reasoner=self.reasoner)
